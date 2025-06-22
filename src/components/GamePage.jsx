@@ -4,26 +4,32 @@ import { useDispatch, useSelector } from "react-redux";
 import {
   CircleOIcon,
   CrossXIcon,
+  ExitIcon,
+  MatchDrawIcon,
   RefreshIcon,
   ResetIcon,
   VsIcon,
 } from "../assets/assets";
-import { updatePlayerData } from "../store/playerDataSlice";
+import { gameLoading, updatePlayerData } from "../store/playerDataSlice";
+import { useNavigate } from "react-router-dom";
 
 function GamePage() {
-  const { xoxGameData: playersData, level } = useSelector((state) => state);
+  const playersData = useSelector((state) => state.xoxGameData);
+  const level = useSelector((state) => state.level);
+  const data = playersData;
 
   let cell = level;
   const gridSize = cell === 5 ? cell * 70 : cell === 4 ? cell * 80 : cell * 100;
 
   const [isXTurn, setIsXTurn] = useState(true);
   const [board, setBoard] = useState(Array(cell * cell).fill(null));
-  const [data, setData] = useState(playersData);
   const [winner, setWinner] = useState(null);
   const [isWin, setIsWin] = useState(false);
   const [isGameDraw, setIsGameDraw] = useState(false);
+  const [confirmReset, setConfirmReset] = useState(false);
 
   const dispatch = useDispatch();
+  const navigate = useNavigate();
 
   const handleTurn = (index) => {
     if (board[index]) return;
@@ -57,15 +63,16 @@ function GamePage() {
           const winPlayer = data.filter((prev) => prev.type === firstItem);
           setWinner(winPlayer);
 
-          let updateData = [...data].map((prev) =>
+          let updateData = data.map((prev) =>
             prev.type === winPlayer[0].type
               ? { ...prev, score: prev.score + 1 }
               : prev
           );
+
           dispatch(updatePlayerData(updateData));
 
           setIsWin(true);
-          return firstItem;
+          return;
         }
       }
 
@@ -77,9 +84,9 @@ function GamePage() {
   }, [board]);
 
   const handleReset = () => {
-    let updateData = [...data].map((prev) => ({ ...prev, score: 0 }));
-    setData(updateData);
-    dispatch(updatePlayerData(updateData));
+    let resetData = playersData.map((prev) => ({ ...prev, score: 0 }));
+    dispatch(updatePlayerData(resetData));
+    setConfirmReset(false);
   };
 
   const handleRefresh = () => {
@@ -89,8 +96,47 @@ function GamePage() {
     setIsGameDraw(false);
   };
 
+  const handleExit = () => {
+    dispatch(gameLoading());
+    navigate("/");
+  };
+
   return (
-    <div className="w-full h-full flex flex-col items-center gap-20 py-10 sm:gap-15">
+    <div
+      className={`relative w-full h-full flex flex-col items-center gap-20 py-10 sm:gap-15`}
+    >
+      {confirmReset && (
+        <>
+          <div className="fixed inset-0 bg-black opacity-60 z-40 backdrop-blur-xl" />
+          <div
+            className="fixed z-50 top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 
+                    bg-[#222] text-white rounded-[var(--cardRadius)] p-6 w-[90%] max-w-md shadow-xl"
+          >
+            <h2 className="text-lg sm:text-xl font-semibold mb-2">
+              Reset Score?
+            </h2>
+            <p className="text-sm sm:text-base mb-4">
+              This will reset <strong>your score</strong>. Do you want to
+              continue?
+            </p>
+            <div className="flex justify-end gap-3">
+              <button
+                onClick={() => setConfirmReset(false)}
+                className="px-4 py-2 text-sm sm:text-base bg-[#404040] rounded-full cursor-pointer hover:bg-[#555]"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleReset}
+                className="px-4 py-2 text-sm sm:text-base bg-red-600 rounded-full cursor-pointer hover:bg-red-700"
+              >
+                Reset
+              </button>
+            </div>
+          </div>
+        </>
+      )}
+
       <div className="score-board flex items-center gap-4">
         <ScoreCard
           name={playersData[0]?.playerName}
@@ -114,7 +160,7 @@ function GamePage() {
         />
       </div>
       {isWin ? (
-        <div className="min-w-[350px] border rounded-3xl">
+        <div className="min-w-[350px] border rounded-3xl overflow-hidden">
           <WinCard winner={winner} handleRefresh={handleRefresh} />
         </div>
       ) : (
@@ -130,12 +176,18 @@ function GamePage() {
               <div className="px-6 py-2 text-xl text-nowrap sm:text-2xl bg-[image:var(--resetBtn)] rounded-[var(--cardRadius)] border [box-shadow:0_0_20px_rgba(255,119,0,0.8)]">
                 Match Draw
               </div>
+              <img
+                className="w-[100px]"
+                src={MatchDrawIcon}
+                alt="match-draw-icon"
+                loading="lazy"
+              />
               <button onClick={handleRefresh} className="outline-none">
                 <img
                   className="w-[50px] transition duration-300 ease-in cursor-pointer hover:rotate-180 sm:w-[60px]"
                   src={RefreshIcon}
                   alt="refresh-icon to play again"
-                  title="refresh"
+                  title="refresh button"
                   loading="lazy"
                 />
               </button>
@@ -145,14 +197,24 @@ function GamePage() {
           )}
         </div>
       )}
-      <Button
-        onClick={handleReset}
-        imgSrc={ResetIcon}
-        imgAlt={"reset-btn-icon"}
-        className="px-8 bg-[image:var(--resetBtn)] text-xl hover:border-white hover:[box-shadow:0_0_20px_rgba(255,119,0,0.8)] sm:text-2xl"
-      >
-        Reset Game
-      </Button>
+      <div className="flex gap-5">
+        <Button
+          onClick={() => setConfirmReset(true)}
+          imgSrc={ResetIcon}
+          imgAlt={"reset-btn-icon"}
+          className="px-8 bg-[image:var(--resetBtn)] text-xl hover:border-white hover:[box-shadow:0_0_20px_rgba(255,119,0,0.8)] sm:text-2xl"
+        >
+          Reset Game
+        </Button>
+        <Button
+          onClick={handleExit}
+          imgSrc={ExitIcon}
+          imgAlt={"exit-btn-icon"}
+          className="bg-[image:var(--resetBtn)] hover:[box-shadow:0_0_20px_rgba(255,119,0,0.8)]"
+        >
+          Exit Game
+        </Button>
+      </div>
     </div>
   );
 }

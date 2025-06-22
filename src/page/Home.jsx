@@ -1,16 +1,14 @@
-import React, { useState } from "react";
-import { Button, Welcome, PlayerSetup } from "../components/index";
+import { Welcome, PlayerSetup } from "../components/index";
 import { gameLoading } from "../store/playerDataSlice";
 import { useDispatch, useSelector } from "react-redux";
 
 function Home() {
   const game = useSelector((state) => state.gameLoad);
-  const [start, setStart] = useState(game);
+  const start = game;
 
   const dispatch = useDispatch();
 
   const handleGameLoad = () => {
-    setStart((prev) => !prev);
     dispatch(gameLoading());
   };
 

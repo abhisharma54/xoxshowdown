@@ -8,7 +8,6 @@ import Avatar2 from "./img/avatar2.svg";
 import Avatar3 from "./img/avatar3.svg";
 import Avatar4 from "./img/avatar4.svg";
 import Avatar5 from "./img/avatar5.svg";
-import WinIcon from "./img/win-icon.svg";
 import PlayIcon from "./img/play-icon.svg";
 import ResetIcon from "./img/reset-icon.svg";
 import ExitIcon from "./img/exit-icon.svg";
@@ -16,8 +15,11 @@ import RefreshIcon from "./img/refresh-icon.svg";
 import CelebrationIcon1 from "./img/celebration-icon1.svg";
 import CelebrationIcon2 from "./img/celebration-icon2.svg";
 import CelebrationIcon3 from "./img/celebration-icon3.svg";
-import CelebrationIcon4 from "./img/celebration-icon4.svg";
 import CloseIcon from "./img/close-icon.svg";
+import PositionIcon1 from "./img/position-icon1.svg";
+import PositionIcon2 from "./img/position-icon2.svg";
+import PositionIcon3 from "./img/position-icon3.svg";
+import MatchDrawIcon from "./img/match-draw-icon.svg";
 
 export {
   favicon,
@@ -30,7 +32,6 @@ export {
   Avatar3,
   Avatar4,
   Avatar5,
-  WinIcon,
   PlayIcon,
   ResetIcon,
   ExitIcon,
@@ -38,6 +39,9 @@ export {
   CelebrationIcon1,
   CelebrationIcon2,
   CelebrationIcon3,
-  CelebrationIcon4,
   CloseIcon,
+  PositionIcon1,
+  PositionIcon2,
+  PositionIcon3,
+  MatchDrawIcon,
 };
