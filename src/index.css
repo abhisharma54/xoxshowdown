@@ -11,6 +11,7 @@
   );
   --color: #fff;
   --startBtn: linear-gradient(to right, #9d00ff, #f10a94);
+  --cancelBtn: linear-gradient(to right, #9d00ff, #f10a94);
   --resetBtn: linear-gradient(to right, #e02424, #ff7700);
   --errorBgColor: linear-gradient(to right, #ff0000, #530000);
   --cardRadius: 15px;

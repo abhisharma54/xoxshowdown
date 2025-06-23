@@ -27,6 +27,7 @@ function GamePage() {
   const [isWin, setIsWin] = useState(false);
   const [isGameDraw, setIsGameDraw] = useState(false);
   const [confirmReset, setConfirmReset] = useState(false);
+  const [scoreResetMsg, setScoreResetMsg] = useState("");
 
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -84,6 +85,15 @@ function GamePage() {
   }, [board]);
 
   const handleReset = () => {
+    let nonZeroScores = playersData.some((player) => player.score !== 0);
+    if (nonZeroScores) {
+      setConfirmReset(true);
+    } else {
+      setScoreResetMsg("All scores are already zero.");
+    }
+  };
+
+  const handleConfirmReset = () => {
     let resetData = playersData.map((prev) => ({ ...prev, score: 0 }));
     dispatch(updatePlayerData(resetData));
     setConfirmReset(false);
@@ -107,10 +117,10 @@ function GamePage() {
     >
       {confirmReset && (
         <>
-          <div className="fixed inset-0 bg-black opacity-60 z-40 backdrop-blur-xl" />
+          <div className="fixed inset-0 bg-black/40 backdrop-blur-xs z-40" />
           <div
             className="fixed z-50 top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 
-                    bg-[#222] text-white rounded-[var(--cardRadius)] p-6 w-[90%] max-w-md shadow-xl"
+                    bg-[var(--bgColor)] [box-shadow:0_0_15px_-8px_rgba(242,0,255,0.8)] border border-[#9d00ff] text-white rounded-[var(--cardRadius)] p-6 w-[90%] max-w-md shadow-xl"
           >
             <h2 className="text-lg sm:text-xl font-semibold mb-2">
               Reset Score?
@@ -122,19 +132,38 @@ function GamePage() {
             <div className="flex justify-end gap-3">
               <button
                 onClick={() => setConfirmReset(false)}
-                className="px-4 py-2 text-sm sm:text-base bg-[#404040] rounded-full cursor-pointer hover:bg-[#555]"
+                className="px-4 py-2 text-sm sm:text-base bg-[image:var(--cancelBtn)] rounded-full cursor-pointer transition duration-150 ease-in hover:[box-shadow:0_0_10px_rgba(242,0,255,0.8)]"
               >
                 Cancel
               </button>
               <button
-                onClick={handleReset}
-                className="px-4 py-2 text-sm sm:text-base bg-red-600 rounded-full cursor-pointer hover:bg-red-700"
+                onClick={handleConfirmReset}
+                className="px-4 py-2 text-sm sm:text-base bg-[image:var(--resetBtn)] rounded-full cursor-pointer transition duration-150 ease-in hover:[box-shadow:0_0_10px_rgba(255,119,0,0.8)]"
               >
                 Reset
               </button>
             </div>
           </div>
         </>
+      )}
+
+      {scoreResetMsg && (
+        <div className="fixed inset-0 bg-black/40 backdrop-blur-xs z-40">
+          <div
+            className="fixed z-50 top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 
+                    bg-[var(--bgColor)] [box-shadow:0_0_15px_-8px_rgba(242,0,255,0.8)] border border-[#9d00ff] flex justify-between items-center text-white rounded-[var(--cardRadius)] p-6 w-[90%] max-w-md shadow-xl"
+          >
+            <p className="text-sm sm:text-sm">{scoreResetMsg}</p>
+            <div className="flex justify-end gap-3">
+              <button
+                onClick={() => setScoreResetMsg("")}
+                className="px-4 py-2 text-sm sm:text-base bg-[image:var(--cancelBtn)] rounded-full cursor-pointer transition duration-150 ease-in hover:[box-shadow:0_0_10px_rgba(242,0,255,0.8)]"
+              >
+                Cancel
+              </button>
+            </div>
+          </div>
+        </div>
       )}
 
       <div className="score-board flex items-center gap-4">
@@ -199,7 +228,7 @@ function GamePage() {
       )}
       <div className="flex gap-5">
         <Button
-          onClick={() => setConfirmReset(true)}
+          onClick={handleReset}
           imgSrc={ResetIcon}
           imgAlt={"reset-btn-icon"}
           className="px-8 bg-[image:var(--resetBtn)] text-xl hover:border-white hover:[box-shadow:0_0_20px_rgba(255,119,0,0.8)] sm:text-2xl"

@@ -2,14 +2,12 @@ import {
   CelebrationIcon1,
   CelebrationIcon2,
   CelebrationIcon3,
-  CircleOIcon,
-  CrossXIcon,
   DefaultAvatar,
   RefreshIcon,
 } from "../assets/assets";
 
 function WinCard({ winner, handleRefresh }) {
-  let { type, avatar, playerName } = winner[0];
+  let { avatar, playerName } = winner[0];
 
   return (
     <div className="relative w-full h-full flex flex-col items-center gap-2 py-5">
@@ -40,15 +38,7 @@ function WinCard({ winner, handleRefresh }) {
       <div className={`w-[80px] border rounded-full ${avatar ? "p-0" : "p-2"}`}>
         <img src={avatar || DefaultAvatar} alt="avatar-img" loading="lazy" />
       </div>
-      <div className="flex items-center gap-0">
-        <img
-          className="w-[30px] sm:w-[45px]"
-          src={type === "X" ? CrossXIcon : CircleOIcon}
-          alt={type === "X" ? "cross-icon" : "circle-icon"}
-          loading="lazy"
-        />
-        <h2 className="text-xl font-semibold sm:text-2xl">{playerName}</h2>
-      </div>
+      <h2 className="text-xl font-semibold sm:text-2xl">{playerName}</h2>
       <span className="px-4 py-2 bg-[image:var(--startBtn)] rounded-xl text-xl font-bold sm:text-2xl z-10">
         CONGRATS
       </span>
