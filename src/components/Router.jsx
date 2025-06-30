@@ -1,5 +1,5 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import { Home, Layout, XoxShowdown } from "./index";
+import { Home, Layout, XoxShowdown, NotFoundPage } from "./index";
 
 function Router() {
   return (
@@ -9,6 +9,7 @@ function Router() {
           <Route index element={<Home />} />
           <Route path="xox-showdown" element={<XoxShowdown />} />
         </Route>
+        <Route path="*" element={<NotFoundPage />} />
       </Routes>
     </BrowserRouter>
   );

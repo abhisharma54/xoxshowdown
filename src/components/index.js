@@ -11,6 +11,7 @@ import PlayerSetup from "./PlayerSetup";
 import PlayerCard from "./PlayerCard";
 import ScoreCard from "./ScoreCard";
 import WinCard from "./WinCard";
+import NotFoundPage from "./NotFoundPage";
 
 export {
   Home,
@@ -26,4 +27,5 @@ export {
   PlayerCard,
   ScoreCard,
   WinCard,
+  NotFoundPage,
 };
