@@ -8,7 +8,7 @@ export default function Button({
   return (
     <button
       {...props}
-      className={`flex gap-2 button px-6 py-2 rounded-full transition duration-100 ease-in border border-transparent cursor-pointer hover:border-white ${className}`}
+      className={`flex gap-2 button px-6 py-2 rounded-full border border-[#101010] cursor-pointer transition duration-100 ease-in hover:border-white ${className}`}
     >
       {imgSrc && (
         <img
