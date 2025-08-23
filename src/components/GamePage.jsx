@@ -16,7 +16,6 @@ import { useNavigate } from "react-router-dom";
 function GamePage() {
   const playersData = useSelector((state) => state.xoxGameData);
   const level = useSelector((state) => state.level);
-  const data = playersData;
 
   let cell = level;
   const gridSize = cell === 5 ? cell * 70 : cell === 4 ? cell * 80 : cell * 100;
@@ -28,6 +27,7 @@ function GamePage() {
   const [isGameDraw, setIsGameDraw] = useState(false);
   const [confirmReset, setConfirmReset] = useState(false);
   const [scoreResetMsg, setScoreResetMsg] = useState("");
+  const [turnCount, setTurnCount] = useState({ X: 0, O: 0 });
 
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -40,49 +40,65 @@ function GamePage() {
       ? { type: "X", icon: CrossXIcon }
       : { type: "O", icon: CircleOIcon };
     setBoard(updateRows);
+    setTurnCount((prev) => ({
+      ...prev,
+      [isXTurn ? "X" : "O"]: prev[isXTurn ? "X" : "O"] + 1,
+    }));
     setIsXTurn((prev) => !prev);
   };
 
   useEffect(() => {
     (function checkWinner() {
-      let winPossibility = [];
+      if (turnCount.X >= 3 || turnCount.O >= 3) {
+        let checkIdx = (indices) => {
+          let [firstIndex, ...rest] = indices;
+          let first = board[firstIndex];
+          if (first && rest.every((i) => board[i]?.type === first?.type)) {
+            let winPlayer = playersData.filter(
+              (prev) => prev.type === first.type
+            );
+            let updateData = playersData.map((prev) =>
+              prev.type === first.type
+                ? { ...prev, score: prev.score + 1 }
+                : prev
+            );
 
-      for (let i = 0; i < cell; i++) {
-        winPossibility.push([...Array(cell)].map((_, j) => i * cell + j));
-        winPossibility.push([...Array(cell)].map((_, j) => j * cell + i));
-      }
+            dispatch(updatePlayerData(updateData));
+            setWinner(winPlayer);
+            setIsWin(true);
 
-      winPossibility.push([...Array(cell)].map((_, i) => i * cell + i));
-      winPossibility.push(
-        [...Array(cell)].map((_, i) => i * cell + cell - 1 - i)
-      );
+            return true;
+          } else {
+            return false;
+          }
+        };
 
-      for (let item of winPossibility) {
-        let [firstIndex, ...rest] = item;
-        let firstItem = board[firstIndex]?.type;
-        if (firstItem && rest.every((i) => board[i]?.type === firstItem)) {
-          const winPlayer = data.filter((prev) => prev.type === firstItem);
-          setWinner(winPlayer);
+        for (let i = 0; i < cell; i++) {
+          let row = checkIdx([...Array(cell)].map((_, j) => i * cell + j));
+          console.log({ row, i });
+          if (row) return;
+          let col = checkIdx([...Array(cell)].map((_, j) => i + j * cell));
+          console.log({ col });
+          if (col) return;
+        }
 
-          let updateData = data.map((prev) =>
-            prev.type === winPlayer[0].type
-              ? { ...prev, score: prev.score + 1 }
-              : prev
-          );
+        let diag = checkIdx([...Array(cell)].map((_, i) => i * cell + i));
+        console.log({ diag });
+        if (diag) return;
+        let anti = checkIdx(
+          [...Array(cell)].map((_, i) => i * cell + cell - 1 - i)
+        );
+        console.log({ anti });
+        if (anti) return;
 
-          dispatch(updatePlayerData(updateData));
-
-          setIsWin(true);
+        if (board.every((cell) => cell !== null)) {
+          setIsGameDraw(true);
           return;
         }
+        return null;
       }
-
-      if (board.every((cell) => cell !== null)) {
-        setIsGameDraw(true);
-      }
-      return null;
     })();
-  }, [board]);
+  }, [board, turnCount]);
 
   const handleReset = () => {
     let nonZeroScores = playersData.some((player) => player.score !== 0);
@@ -110,6 +126,14 @@ function GamePage() {
     dispatch(gameLoading());
     navigate("/");
   };
+
+  useEffect(() => {
+    if (confirmReset || scoreResetMsg) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "auto";
+    }
+  }, [confirmReset, scoreResetMsg]);
 
   return (
     <div
@@ -189,7 +213,7 @@ function GamePage() {
         />
       </div>
       {isWin ? (
-        <div className="min-w-[350px] border rounded-3xl overflow-hidden">
+        <div className="min-w-[350px] min-h-[340px] border rounded-3xl overflow-hidden">
           <WinCard winner={winner} handleRefresh={handleRefresh} />
         </div>
       ) : (

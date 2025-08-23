@@ -67,10 +67,12 @@ function PlayerSetup({ handleGameLoad }) {
         ))}
         {error && (
           <div className="flex justify-between items-center -my-6 px-3 py-2 bg-[image:var(--errorBgColor)] text-md font-semibold text-center border rounded-[var(--inputRadius)] [box-shadow:0_0_20px_rgba(255,0,0,0.8)]">
-            <span>Please select a difficulty level to start the game.</span>
+            <span className="text-nowrap">
+              Please select a difficulty level.
+            </span>
             <button onClick={() => setError(false)}>
               <img
-                className="w-[30px] cursor-pointer transition duration-100 ease-in hover:scale-110"
+                className="min-w-[20px] w-[30px] cursor-pointer transition duration-100 ease-in hover:scale-110"
                 src={CloseIcon}
                 alt="close-icon"
                 title="remove error"
